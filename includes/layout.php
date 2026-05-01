@@ -17,19 +17,47 @@ $activePage = $activePage ?? '';
     <style>
         body { font-family: 'Inter', sans-serif; }
         .nav-active { background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid #fff; }
+
+        /* Sidebar slide-in transition */
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+        @media (max-width: 767px) {
+            #sidebar {
+                position: fixed;
+                top: 0; left: 0;
+                height: 100%;
+                z-index: 40;
+                transform: translateX(-100%);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-100 h-screen flex overflow-hidden">
 
+    <!-- OVERLAY (solo mobile) -->
+    <div id="sidebar-overlay"
+         class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"
+         onclick="closeSidebar()">
+    </div>
+
     <!-- NAVBAR LATERALE -->
-    <aside class="w-64 bg-gray-700 text-white flex flex-col flex-shrink-0 shadow-2xl">
+    <aside id="sidebar" class="w-64 bg-gray-700 text-white flex flex-col flex-shrink-0 shadow-2xl">
         <!-- Logo Area -->
-        <div class="p-6 border-b border-gray-600/50">
+        <div class="p-6 border-b border-gray-600/50 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <i class="bi bi-book-half text-2xl"></i>
                 <span class="text-xl font-bold tracking-tight">BookStock</span>
             </div>
+            <!-- Pulsante chiudi (solo mobile) -->
+            <button class="md:hidden text-gray-300 hover:text-white text-xl leading-none"
+                    onclick="closeSidebar()" aria-label="Chiudi menu">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
 
         <!-- Navigation Links -->
@@ -57,18 +85,27 @@ $activePage = $activePage ?? '';
         </div>
     </aside>
 
-    <!-- CONTENT WRAPPER -->
-    <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        <!-- TOPBAR -->
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
-            <h2 class="text-xl font-semibold text-gray-800"><?php echo $pageTitle ?? 'Gestionale Biblioteca'; ?></h2>
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500 font-medium italic">Gestionale Libreria</span>
-                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-                    <i class="bi bi-person-fill"></i>
-                </div>
-            </div>
-        </header>
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8">
 
-        <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 overflow-y-auto p-8">
+    <?php if (empty($hideLayoutHeader)): ?>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800"><?= htmlspecialchars($pageTitle ?? 'Gestionale Libreria') ?></h1>
+                <?php if (!empty($pageSubtitle)): ?>
+                <p class="text-sm text-gray-500 mt-1"><?= htmlspecialchars($pageSubtitle) ?></p>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <script>
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebar-overlay').classList.remove('hidden');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+        }
+    </script>

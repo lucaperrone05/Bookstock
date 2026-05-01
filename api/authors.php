@@ -7,7 +7,7 @@ $id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
 switch ($method) {
 
-    // GET — lista tutti gli autori o uno solo
+    // GET — lista autori o uno solo
     case 'GET':
         if ($id) {
             $stmt = $pdo->prepare("SELECT * FROM authors WHERE id = ?");
@@ -22,42 +22,35 @@ switch ($method) {
         }
         break;
 
-    // POST — crea un nuovo autore
+    // POST — crea autore
     case 'POST':
         $body = json_decode(file_get_contents('php://input'), true);
 
         if (empty($body['name'])) errorResponse('Il campo name è obbligatorio', 400);
 
-        $stmt = $pdo->prepare("INSERT INTO authors (name, bio) VALUES (?, ?)");
-        $stmt->execute([
-            trim($body['name']),
-            $body['bio'] ?? null
-        ]);
+        $stmt = $pdo->prepare("INSERT INTO authors (name) VALUES (?)");
+        $stmt->execute([trim($body['name'])]);
 
         $new = $pdo->prepare("SELECT * FROM authors WHERE id = ?");
         $new->execute([$pdo->lastInsertId()]);
         successResponse($new->fetch(), 'Autore creato', 201);
         break;
 
-    // PUT — modifica un autore esistente
+    // PUT — modifica autore
     case 'PUT':
         if (!$id) errorResponse('ID obbligatorio', 400);
 
         $body = json_decode(file_get_contents('php://input'), true);
         if (empty($body['name'])) errorResponse('Il campo name è obbligatorio', 400);
 
-        $stmt = $pdo->prepare("UPDATE authors SET name = ?, bio = ? WHERE id = ?");
-        $stmt->execute([
-            trim($body['name']),
-            $body['bio'] ?? null,
-            $id
-        ]);
+        $stmt = $pdo->prepare("UPDATE authors SET name = ? WHERE id = ?");
+        $stmt->execute([trim($body['name']), $id]);
 
         if ($stmt->rowCount() === 0) errorResponse('Autore non trovato', 404);
         successResponse(null, 'Autore aggiornato');
         break;
 
-    // DELETE — elimina un autore
+    // DELETE — elimina autore
     case 'DELETE':
         if (!$id) errorResponse('ID obbligatorio', 400);
 
@@ -68,7 +61,6 @@ switch ($method) {
             if ($stmt->rowCount() === 0) errorResponse('Autore non trovato', 404);
             successResponse(null, 'Autore eliminato');
         } catch (PDOException $e) {
-            // FOREIGN KEY constraint — autore ha libri associati
             errorResponse('Impossibile eliminare: l\'autore ha libri associati', 409);
         }
         break;

@@ -7,7 +7,7 @@ $id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
 switch ($method) {
 
-    // GET — lista tutte le categorie o una sola
+    // GET — lista categorie o una sola
     case 'GET':
         if ($id) {
             $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
@@ -22,42 +22,35 @@ switch ($method) {
         }
         break;
 
-    // POST — crea una nuova categoria
+    // POST — crea categoria
     case 'POST':
         $body = json_decode(file_get_contents('php://input'), true);
 
         if (empty($body['name'])) errorResponse('Il campo name è obbligatorio', 400);
 
-        $stmt = $pdo->prepare("INSERT INTO categories (name, description) VALUES (?, ?)");
-        $stmt->execute([
-            trim($body['name']),
-            $body['description'] ?? null
-        ]);
+        $stmt = $pdo->prepare("INSERT INTO categories (name) VALUES (?)");
+        $stmt->execute([trim($body['name'])]);
 
         $new = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
         $new->execute([$pdo->lastInsertId()]);
         successResponse($new->fetch(), 'Categoria creata', 201);
         break;
 
-    // PUT — modifica una categoria esistente
+    // PUT — modifica categoria
     case 'PUT':
         if (!$id) errorResponse('ID obbligatorio', 400);
 
         $body = json_decode(file_get_contents('php://input'), true);
         if (empty($body['name'])) errorResponse('Il campo name è obbligatorio', 400);
 
-        $stmt = $pdo->prepare("UPDATE categories SET name = ?, description = ? WHERE id = ?");
-        $stmt->execute([
-            trim($body['name']),
-            $body['description'] ?? null,
-            $id
-        ]);
+        $stmt = $pdo->prepare("UPDATE categories SET name = ? WHERE id = ?");
+        $stmt->execute([trim($body['name']), $id]);
 
         if ($stmt->rowCount() === 0) errorResponse('Categoria non trovata', 404);
         successResponse(null, 'Categoria aggiornata');
         break;
 
-    // DELETE — elimina una categoria
+    // DELETE — elimina categoria
     case 'DELETE':
         if (!$id) errorResponse('ID obbligatorio', 400);
 

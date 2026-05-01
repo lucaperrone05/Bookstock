@@ -1,10 +1,15 @@
 <?php
-
-// Imposta gli header per le risposte JSON
+// Header JSON e CORS
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+
+// Gestione richieste OPTIONS (CORS preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 // Risposta di successo
 function successResponse($data = null, $message = 'OK', $status = 200) {
@@ -25,11 +30,5 @@ function errorResponse($message = 'Errore generico', $status = 400) {
         'message' => $message,
         'data'    => null
     ]);
-    exit;
-}
-
-// Gestione richieste OPTIONS
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
     exit;
 }

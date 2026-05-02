@@ -1,4 +1,5 @@
 <?php
+require_once '../includes/auth_check.php';
 $activePage = 'catalogo';
 $pageTitle  = 'Modifica Libro';
 

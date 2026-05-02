@@ -17,7 +17,7 @@ switch ($method) {
         $stmt->execute([trim($body['username'])]);
         $user = $stmt->fetch();
 
-        if (!$user || !password_verify($body['password'], $user['password'])) {
+        if (!$user || ($body['password'] !== $user['password'] && !password_verify($body['password'], $user['password']))) {
             errorResponse('Credenziali non valide', 401);
         }
 

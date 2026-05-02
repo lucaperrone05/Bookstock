@@ -78,7 +78,7 @@ $activePage = $activePage ?? '';
 
         <!-- Footer Sidebar -->
         <div class="p-4 border-t border-gray-600/50 bg-gray-800/30">
-            <a href="login.php" class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-600 transition-all text-sm">
+            <a href="logout.php" class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-600 transition-all text-sm">
                 <i class="bi bi-box-arrow-left"></i>
                 <span>Esci</span>
             </a>

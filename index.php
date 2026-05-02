@@ -1,4 +1,4 @@
 <?php
-// Reindirizza automaticamente alla pagina del catalogo
-header('Location: pages/catalogo.php');
+// Reindirizza automaticamente alla pagina del login
+header('Location: pages/login.php');
 exit;

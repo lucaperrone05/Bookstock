@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    header('Location: catalogo.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="it">
 
@@ -44,13 +51,6 @@
             -webkit-text-fill-color: white !important;
             transition: background-color 5000s ease-in-out 0s;
         }
-
-        /* Gestione placeholder/floating label con la logica peer di Tailwind */
-        input:focus~label,
-        input:not(:placeholder-shown)~label {
-            transform: scale(0.85) translateY(-1.5rem) translateX(0.25rem);
-            color: white;
-        }
     </style>
 </head>
 
@@ -69,25 +69,31 @@
 
         <!-- Titoli -->
         <h2 class="text-3xl font-bold tracking-tight mb-2">BookStock</h2>
-        <p class="text-white/80 text-sm mb-8">Accedi al tuo gestionale</p>
+        <p class="text-white/80 text-sm mb-6">Accedi al tuo gestionale</p>
+        
+        <!-- Error Container -->
+        <div id="error-container" class="hidden bg-red-500/20 border border-red-500/50 text-red-200 text-sm rounded-xl p-3 mb-6 flex items-center justify-center gap-2">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span id="error-message"></span>
+        </div>
 
         <!-- Form -->
         <form action="#" method="POST" id="loginForm" class="space-y-6">
 
-            <!-- Email Input -->
-            <div class="relative text-left">
-                <input type="email" id="email" name="email" class="peer w-full bg-white/10 border border-white/20 rounded-xl px-4 pt-5 pb-2 text-white placeholder-transparent focus:outline-none focus:bg-white/20 focus:border-white/50 focus:ring-2 focus:ring-white/10 transition-all duration-300 backdrop-blur-sm" placeholder="nome@esempio.com" required>
-                <label for="email" class="absolute left-4 top-3.5 text-white/70 transition-all duration-300 pointer-events-none origin-top-left flex items-center gap-2">
-                    <i class="bi bi-envelope"></i> Email
+            <!-- Username Input -->
+            <div class="text-left space-y-1.5">
+                <label for="username" class="text-white/90 font-medium text-sm flex items-center gap-2 ml-1">
+                    <i class="bi bi-person"></i> Username
                 </label>
+                <input type="text" id="username" name="username" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:bg-white/20 focus:border-white/50 focus:ring-2 focus:ring-white/10 transition-all duration-300 backdrop-blur-sm" placeholder="Inserisci il tuo username" required>
             </div>
 
             <!-- Password Input -->
-            <div class="relative text-left">
-                <input type="password" id="password" name="password" class="peer w-full bg-white/10 border border-white/20 rounded-xl px-4 pt-5 pb-2 text-white placeholder-transparent focus:outline-none focus:bg-white/20 focus:border-white/50 focus:ring-2 focus:ring-white/10 transition-all duration-300 backdrop-blur-sm" placeholder="Password" required>
-                <label for="password" class="absolute left-4 top-3.5 text-white/70 transition-all duration-300 pointer-events-none origin-top-left flex items-center gap-2">
+            <div class="text-left space-y-1.5">
+                <label for="password" class="text-white/90 font-medium text-sm flex items-center gap-2 ml-1">
                     <i class="bi bi-lock"></i> Password
                 </label>
+                <input type="password" id="password" name="password" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:bg-white/20 focus:border-white/50 focus:ring-2 focus:ring-white/10 transition-all duration-300 backdrop-blur-sm" placeholder="Inserisci la password" required>
             </div>
 
             <!-- Pulsante Login -->
@@ -95,18 +101,20 @@
                 Accedi <i class="bi bi-arrow-right-short text-2xl leading-none"></i>
             </button>
         </form>
-
-        <!-- Link dimenticato -->
-        <a href="#" class="inline-block mt-8 text-sm text-white/70 hover:text-white hover:underline transition-colors duration-200">
-            Hai dimenticato la password?
-        </a>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-login');
             const originalHTML = btn.innerHTML;
+            const errorContainer = document.getElementById('error-container');
+            const errorMessage = document.getElementById('error-message');
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            errorContainer.classList.add('hidden');
 
             // Sostituisce il contenuto con uno spinner SVG di Tailwind
             btn.innerHTML = `
@@ -118,11 +126,29 @@
             `;
             btn.disabled = true;
 
-            setTimeout(() => {
+            try {
+                const res = await fetch('../api/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    window.location.href = 'catalogo.php';
+                } else {
+                    errorMessage.textContent = data.message || 'Errore durante il login';
+                    errorContainer.classList.remove('hidden');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                errorMessage.textContent = 'Errore di connessione al server';
+                errorContainer.classList.remove('hidden');
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
-                alert('Login effettuato con successo! (Solo frontend)');
-            }, 1500);
+            }
         });
     </script>
 </body>

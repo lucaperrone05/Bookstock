@@ -106,17 +106,18 @@ input[type="number"] { -moz-appearance: textfield; }
 <!-- TomSelect JS -->
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-// --- 1. Inizializza TomSelect (Dropdown Ricercabile automatico) ---
+// --- 1. Inizializza TomSelect (Dropdown Ricercabile) ---
 const selectControl = new TomSelect('#book_id', {
     create: false,
     sortField: { field: "text", direction: "asc" },
     onChange: function(value) {
         const helper = document.getElementById('current-stock-helper');
         if (!value) return helper.classList.add('hidden');
-        
-        // Legge data-stock dall'opzione selezionata e mostra il box
-        const option = this.options[value].element;
-        document.getElementById('current-stock-val').textContent = option.dataset.stock;
+
+        // ✅ Fix: legge sempre dal <option> reale nel DOM, non dall'oggetto interno di TomSelect
+        const originalOption = document.querySelector(`#book_id option[value="${value}"]`);
+        if (!originalOption) return;
+        document.getElementById('current-stock-val').textContent = originalOption.dataset.stock;
         helper.classList.remove('hidden');
     }
 });
@@ -174,13 +175,16 @@ form.addEventListener('submit', async (e) => {
         if (res.ok && result.success) {
             showAlert('Movimento registrato! Nuova giacenza: <strong class="ml-1 text-lg">' + result.data.new_stock + '</strong>', true);
             
-            // Aggiorna l'opzione nella tendina con la nuova giacenza
+            // ✅ Fix: aggiorna il data-stock nel <option> reale del DOM
+            const originalOption = document.querySelector(`#book_id option[value="${data.book_id}"]`);
+            if (originalOption) originalOption.dataset.stock = result.data.new_stock;
+
+            // Aggiorna solo il testo nell'oggetto TomSelect (senza passare .element)
             const optionObj = selectControl.options[data.book_id];
-            optionObj.element.dataset.stock = result.data.new_stock;
-            optionObj.text = optionObj.text.replace(/\(Attuali: \d+\)/, `(Attuali: ${result.data.new_stock})`);
-            selectControl.updateOption(data.book_id, optionObj);
-            
-            // Reset dei campi ma manteniamo il tipo (Carico/Scarico)
+            const newText = optionObj.text.replace(/\(Attuali: \d+\)/, `(Attuali: ${result.data.new_stock})`);
+            selectControl.updateOption(data.book_id, { value: data.book_id, text: newText });
+
+            // Reset quantità e selezione
             qtyInput.value = 1;
             selectControl.clear();
         } else {

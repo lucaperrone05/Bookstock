@@ -8,9 +8,8 @@ $book_id = isset($_GET['book_id']) ? (int)$_GET['book_id'] : null;
 
 switch ($method) {
 
-    // GET — movimenti o alert scorte
+    // GET — alert scorte
     case 'GET':
-
         if ($action === 'alerts') {
             $stmt = $pdo->query("
                 SELECT
@@ -25,31 +24,12 @@ switch ($method) {
                 ORDER BY b.stock_qty ASC
             ");
             successResponse($stmt->fetchAll(), 'Libri sotto soglia scorta');
+        } else {
+            errorResponse('Azione non specificata o non supportata', 400);
         }
-
-        if ($book_id) {
-            $stmt = $pdo->prepare("
-                SELECT sm.*, b.title AS book_title
-                FROM stock_movements sm
-                JOIN books b ON sm.book_id = b.id
-                WHERE sm.book_id = ?
-                ORDER BY sm.id DESC
-            ");
-            $stmt->execute([$book_id]);
-            successResponse($stmt->fetchAll());
-        }
-
-        $stmt = $pdo->query("
-            SELECT sm.*, b.title AS book_title
-            FROM stock_movements sm
-            JOIN books b ON sm.book_id = b.id
-            ORDER BY sm.id DESC
-            LIMIT 50
-        ");
-        successResponse($stmt->fetchAll());
         break;
 
-    // POST — registra un movimento
+    // POST — aggiorna giacenza
     case 'POST':
         $body = json_decode(file_get_contents('php://input'), true);
 
@@ -76,28 +56,14 @@ switch ($method) {
             errorResponse('Stock insufficiente. Disponibili: ' . $book['stock_qty'], 400);
         }
 
-        $pdo->beginTransaction();
         try {
-            $stmt = $pdo->prepare("
-                INSERT INTO stock_movements (book_id, type, quantity, note)
-                VALUES (?, ?, ?, ?)
-            ");
-            $stmt->execute([
-                (int)$body['book_id'],
-                $body['type'],
-                $qty,
-                $body['note'] ?? null
-            ]);
-
             $update = $pdo->prepare("UPDATE books SET stock_qty = ? WHERE id = ?");
             $update->execute([$newStock, (int)$body['book_id']]);
 
-            $pdo->commit();
-            successResponse(['new_stock' => $newStock], 'Movimento registrato', 201);
+            successResponse(['new_stock' => $newStock], 'Giacenza aggiornata', 200);
 
         } catch (PDOException $e) {
-            $pdo->rollBack();
-            errorResponse('Errore durante la registrazione del movimento', 500);
+            errorResponse('Errore durante l\'aggiornamento della giacenza', 500);
         }
         break;
 

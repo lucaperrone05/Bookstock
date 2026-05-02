@@ -35,7 +35,7 @@ input[type="number"] { -moz-appearance: textfield; }
                 <i class="bi bi-box-seam text-lg"></i>
             </div>
             <div>
-                <h2 class="font-semibold text-gray-800">Registra Movimento</h2>
+                <h2 class="font-semibold text-gray-800">Aggiorna Giacenza</h2>
             </div>
         </div>
         
@@ -59,9 +59,8 @@ input[type="number"] { -moz-appearance: textfield; }
                 </p>
             </div>
 
-            <!-- Movimento & Quantità Semplificato -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-3">Movimento e Quantità *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Tipo Operazione e Quantità *</label>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-6 bg-gray-50 p-5 rounded-xl border border-gray-200">
                     
                     <!-- Carico -->
@@ -173,7 +172,7 @@ form.addEventListener('submit', async (e) => {
         const result = await res.json();
 
         if (res.ok && result.success) {
-            showAlert('Movimento registrato! Nuova giacenza: <strong class="ml-1 text-lg">' + result.data.new_stock + '</strong>', true);
+            showAlert('Giacenza aggiornata! Nuova giacenza: <strong class="ml-1 text-lg">' + result.data.new_stock + '</strong>', true);
             
             // ✅ Fix: aggiorna il data-stock nel <option> reale del DOM
             const originalOption = document.querySelector(`#book_id option[value="${data.book_id}"]`);

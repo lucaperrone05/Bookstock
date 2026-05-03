@@ -9,7 +9,7 @@ if ($id > 0) {
         $stmt = $pdo->prepare("DELETE FROM books WHERE id = ?");
         $stmt->execute([$id]);
     } catch (PDOException $e) {
-        // Ignoriamo l'errore o gestiamolo, per ora torniamo al catalogo
+        // ignoriamo l'errore per ora
     }
 }
 

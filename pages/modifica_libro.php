@@ -23,7 +23,7 @@ $book = $stmt->fetch();
 
 if (!$book) { header('Location: catalogo.php'); exit; }
 
-// Carica dropdown per il form
+// dropdown per il form
 $authors    = $pdo->query("SELECT id, name FROM authors ORDER BY name")->fetchAll();
 $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetchAll();
 $publishers = $pdo->query("SELECT id, name FROM publishers ORDER BY name")->fetchAll();

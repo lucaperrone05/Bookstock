@@ -1,6 +1,6 @@
 <?php
 session_start();
-// Distrugge la sessione e tutti i dati associati
+// chiude la sessione e tutti i dati associati
 session_unset();
 session_destroy();
 

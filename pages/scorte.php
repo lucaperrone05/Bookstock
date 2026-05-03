@@ -105,7 +105,7 @@ input[type="number"] { -moz-appearance: textfield; }
 <!-- TomSelect JS -->
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-// --- 1. Inizializza TomSelect (Dropdown Ricercabile) ---
+
 const selectControl = new TomSelect('#book_id', {
     create: false,
     sortField: { field: "text", direction: "asc" },
@@ -113,7 +113,7 @@ const selectControl = new TomSelect('#book_id', {
         const helper = document.getElementById('current-stock-helper');
         if (!value) return helper.classList.add('hidden');
 
-        // ✅ Fix: legge sempre dal <option> reale nel DOM, non dall'oggetto interno di TomSelect
+        // legge sempre dal <option> reale nel DOM, non dall'oggetto interno di TomSelect
         const originalOption = document.querySelector(`#book_id option[value="${value}"]`);
         if (!originalOption) return;
         document.getElementById('current-stock-val').textContent = originalOption.dataset.stock;
@@ -126,7 +126,7 @@ const selectControl = new TomSelect('#book_id', {
     selectControl.trigger('change', <?= $selectedBookId ?>);
 <?php endif; ?>
 
-// --- 2. Logica Pulsanti Quantità ---
+// logica Pulsanti Quantità
 const qtyInput = document.getElementById('quantity');
 function changeQty(delta) {
     let current = parseInt(qtyInput.value) || 1;
@@ -137,7 +137,7 @@ qtyInput.addEventListener('change', () => {
     if (parseInt(qtyInput.value) < 1 || isNaN(qtyInput.value)) qtyInput.value = 1;
 });
 
-// --- 3. Logica Submit ---
+// Logica Submit
 const form = document.getElementById('stock-form');
 const alertContainer = document.getElementById('alert-container');
 const btnSubmit = document.getElementById('btn-submit');
@@ -174,7 +174,7 @@ form.addEventListener('submit', async (e) => {
         if (res.ok && result.success) {
             showAlert('Giacenza aggiornata! Nuova giacenza: <strong class="ml-1 text-lg">' + result.data.new_stock + '</strong>', true);
             
-            // ✅ Fix: aggiorna il data-stock nel <option> reale del DOM
+            // aggiorna il data-stock nel <option> reale del DOM
             const originalOption = document.querySelector(`#book_id option[value="${data.book_id}"]`);
             if (originalOption) originalOption.dataset.stock = result.data.new_stock;
 

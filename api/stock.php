@@ -29,7 +29,7 @@ switch ($method) {
         }
         break;
 
-    // POST — aggiorna giacenza
+    // POST — aggiorna stock
     case 'POST':
         $body = json_decode(file_get_contents('php://input'), true);
 

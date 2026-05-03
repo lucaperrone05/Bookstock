@@ -5,7 +5,9 @@ require_once '../includes/response.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
-// Helper per risolvere gli ID ibridi (selezionato vs nuovo testo)
+// Riceve un ID dal dropdown oppure un nome scritto a mano.
+// Restituisce sempre un ID valido, inserendo il nome nel DB se non esiste ancora.
+
 function resolveHybrid($pdo, $id, $newName, $table) {
     if (!empty($id)) return (int)$id;
     if (!empty($newName)) {

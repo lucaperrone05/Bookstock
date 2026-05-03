@@ -26,10 +26,10 @@ $pageSubtitle = count($books) . ' libri trovati';
 include '../includes/layout.php';
 ?>
 
-<!-- ── Page Content ─────────────────────────────────────────────────────── -->
+<!-- Page Content  -->
 <div class="space-y-6">
 
-    <!-- Search / Filter Bar -->
+    <!-- Barra di ricerca e filtri -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col sm:flex-row gap-3">
         <div class="relative flex-1">
             <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
@@ -38,11 +38,14 @@ include '../includes/layout.php';
                    placeholder="Cerca per titolo, autore…"
                    class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition">
         </div>
+
         <select id="filter-category"
                 class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400 transition bg-white text-gray-600">
             <option value="">Tutte le categorie</option>
+            
             <?php
             $cats = $pdo->query("SELECT DISTINCT name FROM categories ORDER BY name")->fetchAll();
+            
             foreach ($cats as $cat):
             ?>
             <option value="<?= htmlspecialchars($cat['name']) ?>">
@@ -151,7 +154,7 @@ include '../includes/layout.php';
             </table>
         </div>
 
-        <!-- Table Footer: count -->
+        <!-- Footer: count libri trovati -->
         <div class="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
             <span id="visible-count" class="text-xs text-gray-500">
                 <strong><?= count($books) ?></strong> libri trovati
@@ -160,7 +163,7 @@ include '../includes/layout.php';
     </div>
 </div>
 
-<!-- ── Delete Confirm Modal ──────────────────────────────────────────────── -->
+<!-- Delete Confirm Modal -->
 <div id="modal-delete"
      class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
      role="dialog" aria-modal="true" aria-labelledby="modal-delete-title">
@@ -193,9 +196,8 @@ include '../includes/layout.php';
     </div>
 </div>
 
-<!-- ── Scripts ───────────────────────────────────────────────────────────── -->
 <script>
-// ── Live Search + Category Filter ──────────────────────────────────────────
+// Ricerca live e filtro categorie
 const searchInput      = document.getElementById('search-input');
 const filterCategory   = document.getElementById('filter-category');
 const rows             = document.querySelectorAll('.book-row');
@@ -228,7 +230,7 @@ function filterTable() {
 searchInput.addEventListener('input', filterTable);
 filterCategory.addEventListener('change', filterTable);
 
-// ── Delete Modal ────────────────────────────────────────────────────────────
+// eliminare il libro
 const modalDelete  = document.getElementById('modal-delete');
 const modalTitle   = document.getElementById('modal-book-title');
 const modalCancel  = document.getElementById('modal-cancel');

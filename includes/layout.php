@@ -8,17 +8,17 @@ $activePage = $activePage ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle ?? 'BookStock'; ?></title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bootstrap Icons -->
+    <!-- Icone Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .nav-active { background-color: rgba(255, 255, 255, 0.1); border-left: 4px solid #fff; }
 
-        /* Sidebar slide-in transition */
+        /* Sidebar slide-in */
         #sidebar {
             transition: transform 0.3s ease;
         }
@@ -30,6 +30,7 @@ $activePage = $activePage ?? '';
                 z-index: 40;
                 transform: translateX(-100%);
             }
+            
             #sidebar.open {
                 transform: translateX(0);
             }
@@ -39,7 +40,7 @@ $activePage = $activePage ?? '';
 
 <body class="bg-gray-100 h-screen flex overflow-hidden">
 
-    <!-- OVERLAY (solo mobile) -->
+    <!-- OVERLAY -->
     <div id="sidebar-overlay"
          class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"
          onclick="closeSidebar()">
@@ -53,14 +54,15 @@ $activePage = $activePage ?? '';
                 <i class="bi bi-book-half text-2xl"></i>
                 <span class="text-xl font-bold tracking-tight">BookStock</span>
             </div>
-            <!-- Pulsante chiudi (solo mobile) -->
+
+            <!-- Pulsante chiudi -->
             <button class="md:hidden text-gray-300 hover:text-white text-xl leading-none"
                     onclick="closeSidebar()" aria-label="Chiudi menu">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
 
-        <!-- Navigation Links -->
+        <!-- Link di navigazione -->
         <nav class="flex-1 py-6 px-3 space-y-1">
             <a href="catalogo.php" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-gray-600 group <?php echo ($activePage == 'catalogo') ? 'nav-active' : ''; ?>">
                 <i class="bi bi-journals text-lg"></i>
@@ -85,7 +87,7 @@ $activePage = $activePage ?? '';
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto p-4 md:p-8">
 
     <?php if (empty($hideLayoutHeader)): ?>
@@ -100,10 +102,12 @@ $activePage = $activePage ?? '';
     <?php endif; ?>
 
     <script>
+
         function openSidebar() {
             document.getElementById('sidebar').classList.add('open');
             document.getElementById('sidebar-overlay').classList.remove('hidden');
         }
+
         function closeSidebar() {
             document.getElementById('sidebar').classList.remove('open');
             document.getElementById('sidebar-overlay').classList.add('hidden');
